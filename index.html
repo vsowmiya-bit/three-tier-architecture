@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS 3-Tier Web Application</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 40px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #232f3e; text-align: center; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { margin-top: 20px; width: 100%; padding: 12px; background-color: #ff9900; border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #e88b00; }
+        #response-msg { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>AWS 3-Tier Application - Feedback Form</h2>
+        <form id="feedback-form">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required placeholder="Enter your full name">
+
+            <label for="message">Your Feedback:</label>
+            <textarea id="message" name="message" rows="4" required placeholder="Enter feedback details..."></textarea>
+
+            <button type="submit">Submit to Backend API</button>
+        </form>
+        <div id="response-msg"></div>
+    </div>
+
+    <script>
+        document.getElementById('feedback-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const message = document.getElementById('message').value;
+            const resDiv = document.getElementById('response-msg');
+
+            try {
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, message: message })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    resDiv.style.color = 'green';
+                    resDiv.innerText = 'Feedback saved successfully in Amazon RDS MySQL!';
+                    document.getElementById('feedback-form').reset();
+                } else {
+                    resDiv.style.color = 'red';
+                    resDiv.innerText = 'Error: ' + result.message;
+                }
+            } catch (err) {
+                resDiv.style.color = 'red';
+                resDiv.innerText = 'Failed to connect to API: ' + err;
+            }
+        });
+    </script>
+</body>
+</html>
